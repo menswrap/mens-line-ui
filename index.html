@@ -1,19 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>MENS 客服後台</title>
+<meta charset="UTF-8">
+<title>MENS 客服後台</title>
 
-  <style>
-    body { font-family: sans-serif; padding: 10px; }
-    button { margin-left: 5px; padding: 5px 10px; }
-    .row { margin-bottom: 12px; }
-  </style>
+<style>
+body {
+  font-family: sans-serif;
+  padding: 15px;
+  background: #111;
+  color: #fff;
+}
+
+h2 {
+  font-size: 22px;
+}
+
+button {
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+}
+
+.take { background: #ff4444; color: #fff; }
+.release { background: #00c851; color: #fff; }
+
+.row {
+  background: #222;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.status {
+  font-weight: bold;
+  margin-right: 6px;
+}
+</style>
+
 </head>
 <body>
 
 <h2>客戶列表</h2>
-<button onclick="load()">刷新</button>
+<button onclick="load()">手動刷新</button>
 
 <div id="list"></div>
 
@@ -21,7 +51,6 @@
 
 const API = "https://script.google.com/macros/s/AKfycbwwPohoJwBWmDYVBa4womv3x1SKmH14mWDz_0zDjf1cba4NZ1Ez9diigxfoytQPZ9As/exec";
 
-// ===== 載入 =====
 async function load() {
 
   const res = await fetch(API + "?action=getCustomerState&t=" + Date.now());
@@ -43,37 +72,34 @@ async function load() {
     div.className = "row";
 
     div.innerHTML = `
-      <span>
-        ${isControlled ? "🔴接管中" : "🟢AI中"}
-      </span>
-      ｜${name}
-      <button onclick="takeover('${userId}')">接管</button>
-      <button onclick="release('${userId}')">恢復</button>
+      <div>
+        <span class="status">
+          ${isControlled ? "🔴接管中" : "🟢AI中"}
+        </span>
+        ${name}
+      </div>
+
+      <div style="margin-top:8px;">
+        <button class="take" onclick="takeover('${userId}')">接管</button>
+        <button class="release" onclick="release('${userId}')">恢復</button>
+      </div>
     `;
 
     list.appendChild(div);
   });
 }
 
-// ===== 接管 =====
 async function takeover(userId) {
   await fetch(API + "?action=takeover&userId=" + userId + "&t=" + Date.now());
-
-  // 👉 強制重新抓資料（唯一正解）
   setTimeout(load, 300);
 }
 
-// ===== 恢復 =====
 async function release(userId) {
   await fetch(API + "?action=release&userId=" + userId + "&t=" + Date.now());
-
   setTimeout(load, 300);
 }
 
-// 自動載入
 load();
-
-// ⭐ 每5秒自動刷新（手機用超重要）
 setInterval(load, 5000);
 
 </script>
