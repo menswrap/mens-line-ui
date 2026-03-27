@@ -12,10 +12,6 @@ body {
   color: #fff;
 }
 
-h2 {
-  font-size: 22px;
-}
-
 button {
   padding: 10px 14px;
   font-size: 16px;
@@ -30,12 +26,17 @@ button {
   background: #222;
   padding: 12px;
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .status {
   font-weight: bold;
-  margin-right: 6px;
+}
+
+.sub {
+  font-size: 14px;
+  color: #bbb;
+  margin-top: 4px;
 }
 </style>
 
@@ -61,25 +62,32 @@ async function load() {
 
   data.forEach(c => {
 
-    const userId = Object.values(c)[0];
-    const displayName = Object.values(c)[8];
-    const lastTime = Object.values(c)[1];
+    const values = Object.values(c);
+
+    const userId = values[0];
+    const lastTime = values[1];
+    const carModel = values[4];
+    const services = values[5];
+    const displayName = values[8];
 
     const name = displayName || userId;
     const isControlled = lastTime && lastTime !== "";
+
+    const serviceText = services ? services.replace(/[\[\]"]/g, "") : "未選擇項目";
+    const carText = carModel || "未選擇車型";
 
     const div = document.createElement("div");
     div.className = "row";
 
     div.innerHTML = `
-      <div>
-        <span class="status">
-          ${isControlled ? "🔴接管中" : "🟢AI中"}
-        </span>
-        ${name}
+      <div class="status">
+        ${isControlled ? "🔴接管中" : "🟢AI中"} ｜ ${name}
       </div>
 
-      <div style="margin-top:8px;">
+      <div class="sub">🚗 ${carText}</div>
+      <div class="sub">🧰 ${serviceText}</div>
+
+      <div style="margin-top:10px;">
         <button class="take" onclick="takeover('${userId}')">接管</button>
         <button class="release" onclick="release('${userId}')">恢復</button>
       </div>
