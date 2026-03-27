@@ -1,87 +1,80 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>MENS 客服後台</title>
+
+  <style>
+    body { font-family: sans-serif; padding: 10px; }
+    button { margin-left: 5px; padding: 5px 10px; }
+    .row { margin-bottom: 12px; }
+  </style>
 </head>
 <body>
 
 <h2>客戶列表</h2>
-
 <button onclick="load()">刷新</button>
 
 <div id="list"></div>
 
 <script>
-console.log("load start", Date.now());
 
 const API = "https://script.google.com/macros/s/AKfycbwwPohoJwBWmDYVBa4womv3x1SKmH14mWDz_0zDjf1cba4NZ1Ez9diigxfoytQPZ9As/exec";
 
-let loadVersion = 0;
-
+// ===== 載入 =====
 async function load() {
-
-  const current = ++loadVersion;
 
   const res = await fetch(API + "?action=getCustomerState&t=" + Date.now());
   const data = await res.json();
 
-  // ❗如果這不是最新的一次，就丟掉
-  if (current !== loadVersion) return;
-
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  data.forEach((c, index) => {
+  data.forEach(c => {
 
-  const userId = Object.values(c)[0];
-  const displayName = Object.values(c)[8];
-  const lastTime = Object.values(c)[1];
+    const userId = Object.values(c)[0];
+    const displayName = Object.values(c)[8];
+    const lastTime = Object.values(c)[1];
 
-  const name = displayName || userId;
-  const isControlled = lastTime && lastTime !== "";
+    const name = displayName || userId;
+    const isControlled = lastTime && lastTime !== "";
 
-  const div = document.createElement("div");
+    const div = document.createElement("div");
+    div.className = "row";
 
-  div.innerHTML = `
-    <div id="row-${userId}" style="margin-bottom:10px;">
-      <span class="status">
+    div.innerHTML = `
+      <span>
         ${isControlled ? "🔴接管中" : "🟢AI中"}
       </span>
       ｜${name}
       <button onclick="takeover('${userId}')">接管</button>
       <button onclick="release('${userId}')">恢復</button>
-    </div>
-  `;
+    `;
 
-  list.appendChild(div);
-});
-
+    list.appendChild(div);
+  });
 }
 
+// ===== 接管 =====
 async function takeover(userId) {
-  const res = await fetch(API + "?action=takeover&userId=" + userId);
-  const result = await res.json();
+  await fetch(API + "?action=takeover&userId=" + userId + "&t=" + Date.now());
 
-  console.log("takeover result:", result);
-
-  const row = document.getElementById("row-" + userId);
-  if (row) {
-    row.querySelector(".status").innerText = "🔴接管中";
-  }
+  // 👉 強制重新抓資料（唯一正解）
+  setTimeout(load, 300);
 }
 
+// ===== 恢復 =====
 async function release(userId) {
   await fetch(API + "?action=release&userId=" + userId + "&t=" + Date.now());
 
-  const row = document.getElementById("row-" + userId);
-  if (row) {
-    row.querySelector(".status").innerText = "🟢AI中";
-  }
+  setTimeout(load, 300);
 }
 
+// 自動載入
 load();
+
+// ⭐ 每5秒自動刷新（手機用超重要）
+setInterval(load, 5000);
 
 </script>
 
