@@ -57,21 +57,20 @@ async function load() {
 
   const res = await fetch(API + "?action=getCustomerState&t=" + Date.now());
   const data = await res.json();
-
+console.log(data);
   const list = document.getElementById("list");
   list.innerHTML = "";
 
-  // 最新對話排最上面
 　data.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
   data.forEach(c => {
 
-    const values = Object.values(c);
+  const values = Object.values(c);
 
-    const userId = values[0];
-    const lastTime = values[1];
-    const carModel = values[4];
-    const services = values[5];
-    const displayName = values[8];
+　const userId = c.userId;
+　const lastTime = c.lastControlTime;
+　const carModel = c.lastCarModel;
+　const services = c.lastServices;
+　const displayName = c.displayName;
 
     const name = displayName || userId;
     const isControlled = lastTime && lastTime !== "";
