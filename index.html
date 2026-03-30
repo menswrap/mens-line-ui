@@ -61,6 +61,8 @@ async function load() {
   const list = document.getElementById("list");
   list.innerHTML = "";
 
+  // 最新對話排最上面
+　data.sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
   data.forEach(c => {
 
     const values = Object.values(c);
