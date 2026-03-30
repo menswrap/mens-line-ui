@@ -57,7 +57,7 @@ async function load() {
 
   const res = await fetch(API + "?action=getCustomerState&t=" + Date.now());
   const data = await res.json();
-console.log(data);
+  console.log("🔥 data:", data);
   const list = document.getElementById("list");
   list.innerHTML = "";
 
