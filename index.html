@@ -68,41 +68,42 @@ data.sort((a, b) => {
 });
 
 // 🔥 渲染
-data.forEach(c => 
-  
-  const values = Object.values(c);
+data.forEach(c => {
 
-　const userId = c.userId;
-　const lastTime = c.lastControlTime;
-　const carModel = c.lastCarModel;
-　const services = c.lastServices;
-　const displayName = c.displayName;
+  const userId = c.userId;
+  const lastTime = c.lastControlTime;
+  const carModel = c.lastCarModel;
+  const services = c.lastServices;
+  const displayName = c.displayName;
 
-    const name = displayName || userId;
-    const isControlled = lastTime && lastTime !== "";
+  const name = displayName || userId;
+  const isControlled = lastTime && lastTime !== "";
 
-    const serviceText = services ? services.replace(/[\[\]"]/g, "") : "未選擇項目";
-    const carText = carModel || "未選擇車型";
+  const serviceText = typeof services === "string"
+    ? services.replace(/[\[\]"]/g, "")
+    : "未選擇項目";
 
-    const div = document.createElement("div");
-    div.className = "row";
+  const carText = carModel || "未選擇車型";
 
-    div.innerHTML = `
-      <div class="status">
-        ${isControlled ? "🔴接管中" : "🟢AI中"} ｜ ${name}
-      </div>
+  const div = document.createElement("div");
+  div.className = "row";
 
-      <div class="sub">🚗 ${carText}</div>
-      <div class="sub">🧰 ${serviceText}</div>
+  div.innerHTML = `
+    <div class="status">
+      ${isControlled ? "🔴接管中" : "🟢AI中"} ｜ ${name}
+    </div>
 
-      <div style="margin-top:10px;">
-        <button class="take" onclick="takeover('${userId}')">接管</button>
-        <button class="release" onclick="release('${userId}')">恢復</button>
-      </div>
-    `;
+    <div class="sub">🚗 ${carText}</div>
+    <div class="sub">🧰 ${serviceText}</div>
 
-    list.appendChild(div);
-  });
+    <div style="margin-top:10px;">
+      <button class="take" onclick="takeover('${userId}')">接管</button>
+      <button class="release" onclick="release('${userId}')">恢復</button>
+    </div>
+  `;
+
+  list.appendChild(div);
+});
 }
 
 async function takeover(userId) {
